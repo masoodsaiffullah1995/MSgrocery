@@ -8,10 +8,12 @@ const productSchema = new mongoose.Schema({
   offerPrice: { type: Number, required: true },
   image: { type: [String], required: true }, // array of image URLs
   category: { type: String, required: true },
-  date: { type: Number, required: true }
+  date: { type: Number, required: true },
 });
 
 const Product =
-  mongoose.models.Product || mongoose.model("Product", productSchema);
+  mongoose.models.product || mongoose.model("product", productSchema);
+
+//   cache key matches model name
 
 export default Product;
