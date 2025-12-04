@@ -6,6 +6,7 @@ import {
   syncUserCreation,
   syncUserUpdation,
   syncUserDeletion,
+  createUserOrder,
 } from "@/config/inngest";
 
 // Inngest route handler
@@ -15,5 +16,6 @@ export const { GET, POST, PUT } = serve({
     syncUserCreation,
     syncUserUpdation,
     syncUserDeletion,
+    createUserOrder
   ],
 });

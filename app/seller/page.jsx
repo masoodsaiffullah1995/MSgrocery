@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { assets } from "@/assets/assets";
 import Image from "next/image";
@@ -6,22 +6,24 @@ import { useAppContext } from "@/context/AppContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-
 const AddProduct = () => {
-
-  // ❌ you don't actually need getToken if backend uses getAuth(request)
-  // const { getToken } = useAppContext();
-  const { isSeller } = useAppContext(); // if you ever need it for UI
+  // You can also use isSeller to conditionally show this form if needed
+  const { isSeller } = useAppContext();
 
   const [files, setFiles] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Earphone");
+  const [category, setCategory] = useState("Potato"); // ✅ default veg category
   const [price, setPrice] = useState("");
   const [offerPrice, setOfferPrice] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!files.length) {
+      toast.error("Please upload at least one image");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", name);
@@ -31,22 +33,20 @@ const AddProduct = () => {
     formData.append("offerPrice", offerPrice);
 
     for (let i = 0; i < files.length; i++) {
-      formData.append("images", files[i]); // ✅ matches backend: getAll("images")
+      formData.append("images", files[i]); // ✅ matches backend: formData.getAll("images")
     }
 
     try {
-      // ❌ no need for token here, Clerk cookies go automatically
-      // const token = await getToken();
-
       const { data } = await axios.post("/api/product/add", formData);
 
       if (data.success) {
         toast.success(data.message || "Product added");
 
+        // reset form
         setFiles([]);
         setName("");
         setDescription("");
-        setCategory("Earphone");
+        setCategory("Potato");
         setPrice("");
         setOfferPrice("");
       } else {
@@ -61,8 +61,9 @@ const AddProduct = () => {
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       <form onSubmit={handleSubmit} className="md:p-10 p-4 space-y-5 max-w-lg">
+        {/* Images */}
         <div>
-          <p className="text-base font-medium">Product Image</p>
+          <p className="text-base font-medium">Vegetable Image</p>
           <div className="flex flex-wrap items-center gap-3 mt-2">
             {[...Array(4)].map((_, index) => (
               <label key={index} htmlFor={`image${index}`}>
@@ -75,6 +76,7 @@ const AddProduct = () => {
                   type="file"
                   id={`image${index}`}
                   hidden
+                  accept="image/*"
                 />
                 <Image
                   className="max-w-24 cursor-pointer"
@@ -83,7 +85,7 @@ const AddProduct = () => {
                       ? URL.createObjectURL(files[index])
                       : assets.upload_area
                   }
-                  alt=""
+                  alt="Upload vegetable"
                   width={100}
                   height={100}
                 />
@@ -92,14 +94,15 @@ const AddProduct = () => {
           </div>
         </div>
 
+        {/* Name */}
         <div className="flex flex-col gap-1 max-w-md">
           <label className="text-base font-medium" htmlFor="product-name">
-            Product Name
+            Vegetable Name
           </label>
           <input
             id="product-name"
             type="text"
-            placeholder="Type here"
+            placeholder="e.g. Fresh Organic Tomato"
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
             onChange={(e) => setName(e.target.value)}
             value={name}
@@ -107,26 +110,29 @@ const AddProduct = () => {
           />
         </div>
 
+        {/* Description */}
         <div className="flex flex-col gap-1 max-w-md">
           <label
             className="text-base font-medium"
             htmlFor="product-description"
           >
-            Product Description
+            Description
           </label>
           <textarea
             id="product-description"
             rows={4}
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 resize-none"
-            placeholder="Type here"
+            placeholder="Describe freshness, origin, quality, etc."
             onChange={(e) => setDescription(e.target.value)}
             value={description}
             required
           ></textarea>
         </div>
 
+        {/* Category + Prices */}
         <div className="flex items-center gap-5 flex-wrap">
-          <div className="flex flex-col gap-1 w-32">
+          {/* Category */}
+          <div className="flex flex-col gap-1 w-40">
             <label className="text-base font-medium" htmlFor="category">
               Category
             </label>
@@ -134,26 +140,39 @@ const AddProduct = () => {
               id="category"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setCategory(e.target.value)}
-              value={category} // ✅ controlled input (better than defaultValue)
+              value={category}
             >
-              <option value="Earphone">Earphone</option>
-              <option value="Headphone">Headphone</option>
-              <option value="Watch">Watch</option>
-              <option value="Smartphone">Smartphone</option>
-              <option value="Laptop">Laptop</option>
-              <option value="Camera">Camera</option>
-              <option value="Accessories">Accessories</option>
+              <option value="Potato">Potato</option>
+              <option value="Tomato">Tomato</option>
+              <option value="Onion">Onion</option>
+              <option value="Carrot">Carrot</option>
+              <option value="Cabbage">Cabbage</option>
+              <option value="Cauliflower">Cauliflower</option>
+              <option value="Spinach">Spinach</option>
+              <option value="Broccoli">Broccoli</option>
+              <option value="Peas">Peas</option>
+              <option value="Cucumber">Cucumber</option>
+              <option value="Brinjal">Brinjal</option>
+              <option value="Beans">Beans</option>
+              <option value="Capsicum">Capsicum</option>
+              <option value="Pumpkin">Pumpkin</option>
+              <option value="Garlic">Garlic</option>
+              <option value="Ginger">Ginger</option>
+              <option value="Green Chili">Green Chili</option>
             </select>
           </div>
 
+          {/* Price */}
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="product-price">
-              Product Price
+              Price (MRP)
             </label>
             <input
               id="product-price"
               type="number"
               placeholder="0"
+              min="0"
+              step="0.01"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setPrice(e.target.value)}
               value={price}
@@ -161,6 +180,7 @@ const AddProduct = () => {
             />
           </div>
 
+          {/* Offer Price */}
           <div className="flex flex-col gap-1 w-32">
             <label className="text-base font-medium" htmlFor="offer-price">
               Offer Price
@@ -169,6 +189,8 @@ const AddProduct = () => {
               id="offer-price"
               type="number"
               placeholder="0"
+              min="0"
+              step="0.01"
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40"
               onChange={(e) => setOfferPrice(e.target.value)}
               value={offerPrice}
