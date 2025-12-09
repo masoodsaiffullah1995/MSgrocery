@@ -5,6 +5,9 @@ const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 👇 Add this to make bundler selection explicit & silence the warning
+  turbopack: {},
+
   images: {
     remotePatterns: [
       {
